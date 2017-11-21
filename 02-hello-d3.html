@@ -10,7 +10,7 @@
   <body>
     <div class="container">
       <div class="row">
-        <h1>
+        <h1 id="titulo">
           Olar d3
         </h1>
         <br>
@@ -30,6 +30,12 @@
         .text("Um parágrafo de textão dizendo várias coisas para o mundo")
         .style("color", "red")
       // use o mesmo princípio para mudar o parágrafo da explicação.
+      d3.select("#explicacao")
+        .text("Tá bom. Já ajeitou.")
+        .style("color", "darkblue")
+
+      d3.select("#titulo")
+        .style("color", "darkgreen")
     </script>
   </body>
 </html>
