@@ -42,7 +42,8 @@
       .data(dados)
       .enter()
         .append("p")
-        .text("Parágrafo criado a partir dos dados.")
+        .text(function(d) {return "Valor: " + d;})
+        .style("font-size", function(d) {return 3*d + "px";})
     </script>
   </body>
 </html>
