@@ -54,9 +54,13 @@
           .enter()
             .append('rect')
               .attr('x', 0) // A função com dois parâmetros pode entrar aqui
-              .attr('y', function(d, i){return i*40}) // e aqui
+              .attr('y', function(d, i){return i*(altura/dados.length)}) // e aqui
               .attr('width', function(d, i){return d})
-              .attr('height', 20);
+              .attr('height', (0.6 * altura/dados.length))
+              .on("mouseover", function(d) {
+                d3.select(this).style("fill", "orange")})
+              .on("mouseout", function(d) {
+                d3.select(this).style("fill", "steelblue")});
 
       /* Mais dicas :
        * - As barras ficam mais legíveis se não encostarem umas nas outras. Para isso
