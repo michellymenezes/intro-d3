@@ -72,7 +72,7 @@
                 .padding(1); // Configure essa escala com domain, range e padding
 
       var y = d3.scaleLinear()
-                .domain([0, d3.max(dados, (d, i) => d.noventa_percentil)])
+                .domain([0, Math.max(...dados.map((d, i)=> d.noventa_percentil))+1])
                 .rangeRound( [alturaVis, 0]);// Configure essa escala com domain e range
                                // Lembre que uma escala pode converter de 1..10 -> 100..1
 

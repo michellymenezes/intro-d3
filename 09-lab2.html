@@ -11,7 +11,7 @@
 <body>
   <div class="container">
     <div class="row">
-      <h2>Barras com dados vindos de uma url</h2>
+      <h2>Boqueirão por mês</h2>
     </div>
     <div class="row mychart" id="chart">
     </div>
@@ -33,6 +33,12 @@
     .mychart text {
       font: 12px sans-serif;
       text-anchor: left;
+    }
+    .mychart tooltip {
+      position: absolute;
+      width: 200px;
+      height: 28px;
+      pointer-events: none;
     }
   </style>
 
@@ -61,18 +67,19 @@
       /*
        * As escalas
        */
-       var color = d3.scaleLinear()
-                .domain([0, 100])
-                .range(["orange", "steelblue"])
-                .clamp(true);
 
-      var x = d3.scaleBand()
-                .domain(dados.map((dado, indice) => dado.noventa_percentil))
-                .rangeRound([0,larguraVis])
-                .padding(.1); // Configure essa escala com domain, range e padding
+       var cValue = function(d) {return (d.mes >= 3 & d.mes < 9);},
+     color = d3.scaleOrdinal(d3.schemeCategory10);
+       // var color = d3.scaleBand()
+       //          .domain([true, false])
+       //          .range(["orange", "steelblue"]);
+
+      var x = d3.scaleLinear()
+                .domain([Math.min(...dados.map((d, i)=> d.noventa_percentil))-1, Math.max(...dados.map((d, i)=> d.noventa_percentil))+1])
+                .rangeRound([0, larguraVis]); // Configure essa escala com domain, range e padding
 
       var y = d3.scaleLinear()
-                .domain([0, d3.max(dados, (d, i) => d.dez_percentil)])
+                .domain([Math.min(...dados.map((d, i)=> d.dez_percentil))-2, Math.max(...dados.map((d, i)=> d.dez_percentil))+2])
                 .rangeRound( [alturaVis, 0]);// Configure essa escala com domain e range
                                // Lembre que uma escala pode converter de 1..10 -> 100..1
 
@@ -86,12 +93,12 @@
               .enter()
                 .append('circle')
                 .attr("class", "dot")
-                .attr("r", 3.5)
+                .attr("r", 6)
                 .attr('cx', d => x(d.noventa_percentil))   // usando a escala definida acima
-                .attr('width', x.bandwidth()) // largura da barra via escala
+                .attr('width', (d) => alturaVis - x(d.noventa_percentil)) // largura da barra via escala
                 .attr('cy', d => y(d.dez_percentil))
                 .attr('height', (d) => alturaVis - y(d.dez_percentil))
-                .style("fill", function(d) { return color(d.mediana); });; // de cabeca para baixo
+                .style("fill", function(d) { return color(cValue(d)); });; // de cabeca para baixo
 
       /*
        * Os eixos
@@ -101,28 +108,23 @@
               .attr("transform", "translate(0," + alturaVis + ")")
               .call(d3.axisBottom(x)); // magica do d3: gera eixo a partir da escala
 
+      grafico.append("text")
+        .attr("transform", "translate(" + (larguraVis)/2 + "," + (alturaVis + margin.bottom)  + ")")
+        .text("Volume - 90 percentil");
+
       grafico.append('g')
               .attr('transform', 'translate(0,0)')
               .call(d3.axisLeft(y))  // gera eixo a partir da escala
 
       grafico.append("text")
         .attr("transform", "translate(-30," + (alturaVis + margin.top)/2 + ") rotate(-90)")
-        .text("Volume percentual");
+        .text("Volume - 10 percentil");
     }
 
     d3.csv('dados/boqueirao-por-mes.csv', function(dados) {
-      console.log("provavelmente acontece depois")
       desenhaBarras(dados);
     });
 
-    console.log("provavelmente acontece primeiro") // me apague quando entender.
-
-    /*
-    * Assim como a função d3.tsv, existe a d3.csv e a d3.json
-    * Em todas, o primeiro parâmetro é uma URL e o segundo a função que
-    * será executada quando o dado for obtido.
-    * >>>>> A chamada ao d3.tsv é assíncrona <<<<<<
-    */
   </script>
 </body>
 
