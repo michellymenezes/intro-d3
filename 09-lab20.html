@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="utf-8">
+  <title>Barras simples</title>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <h2>Boqueirão por mês</h2>
+    </div>
+    <div class="row mychart" id="chart">
+    </div>
+  </div>
+
+  <style>
+    .mychart rect {
+      fill: steelblue;
+    }
+
+    .mychart dot {
+      stroke: #000;
+    }
+
+    .mychart rect:hover {
+      fill: goldenrod;
+    }
+
+    .mychart text {
+      font: 12px sans-serif;
+      text-anchor: left;
+    }
+  </style>
+
+  <script type="text/javascript">
+    "use strict"
+
+    function desenhaBarras(dados) {
+      // Preencha aqui.
+
+      var alturaSVG = 400, larguraSVG = 900;
+      var	margin = {top: 10, right: 20, bottom:30, left: 45}, // para descolar a vis das bordas do grafico
+          larguraVis = larguraSVG - margin.left - margin.right,
+          alturaVis = alturaSVG - margin.top - margin.bottom;
+
+      /*
+       * Prepara onde adicionaremos a visualizacao
+       */
+      var grafico = d3.select('#chart') // cria elemento <svg> com um <g> dentro
+        .append('svg')
+          .attr('width', larguraVis + margin.left + margin.right)
+          .attr('height', alturaVis + margin.top + margin.bottom)
+        .append('g') // para entender o <g> vá em x03-detalhes-svg.html
+          .attr('transform', 'translate(' +  margin.left + ',' + margin.top + ')');
+
+      // === EDITE DAQUI ===
+      /*
+       * As escalas
+       */
+       var color = d3.scaleLinear()
+                .domain([0, 100])
+                .range(["orange", "steelblue"])
+                .clamp(true);
+
+      var x = d3.scaleBand()
+                .domain(dados.map((dado, indice) => dado.mes))
+                .rangeRound([0,larguraVis])
+                .padding(1); // Configure essa escala com domain, range e padding
+
+      var y = d3.scaleLinear()
+                .domain([0, d3.max(dados, (d, i) => d.noventa_percentil)])
+                .rangeRound( [alturaVis, 0]);// Configure essa escala com domain e range
+                               // Lembre que uma escala pode converter de 1..10 -> 100..1
+
+      // === ATÉ DAQUI ===
+
+      /*
+       * As marcas
+       */var circle =   grafico.selectAll('g')
+              .data(dados)
+              .enter()
+              .append('g');
+
+                circle.append('circle')
+                .attr("class", "dot")
+                .attr("r", 5)
+                .attr('cx', d => x(d.mes))   // usando a escala definida acima
+                .attr('width', x.bandwidth()) // largura da barra via escala
+                .attr('cy', d => y(d.dez_percentil))
+                .attr('height', (d) => alturaVis - y(d.dez_percentil))
+                .style("fill", "cornflowerblue"); // de cabeca para baixo
+
+                circle.append('circle')
+                .attr("class", "dot")
+                .attr("r", 5)
+                .attr('cx', d => x(d.mes))   // usando a escala definida acima
+                .attr('width', x.bandwidth()) // largura da barra via escala
+                .attr('cy', d => y(d.noventa_percentil))
+                .attr('height', (d) => alturaVis - y(d.noventa_percentil))
+                .style("fill", "gold"); // de cabeca para baixo
+
+      /*
+       * Os eixos
+       */
+      grafico.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0," + alturaVis + ")")
+              .call(d3.axisBottom(x)); // magica do d3: gera eixo a partir da escala
+
+      grafico.append("text")
+        .attr("transform", "translate(" + (larguraVis)/2 + "," + (alturaVis + margin.bottom)  + ")")
+        .text("Mês");
+
+      grafico.append('g')
+              .attr('transform', 'translate(0,0)')
+              .call(d3.axisLeft(y))  // gera eixo a partir da escala
+
+      grafico.append("text")
+        .attr("transform", "translate(-30," + (alturaVis + margin.top)/2 + ") rotate(-90)")
+        .text("Volume percentual");
+    }
+
+    d3.csv('dados/boqueirao-por-mes.csv', function(dados) {
+      console.log("provavelmente acontece depois")
+      desenhaBarras(dados);
+    });
+
+    console.log("provavelmente acontece primeiro") // me apague quando entender.
+
+    /*
+    * Assim como a função d3.tsv, existe a d3.csv e a d3.json
+    * Em todas, o primeiro parâmetro é uma URL e o segundo a função que
+    * será executada quando o dado for obtido.
+    * >>>>> A chamada ao d3.tsv é assíncrona <<<<<<
+    */
+  </script>
+</body>
+
+</html>
