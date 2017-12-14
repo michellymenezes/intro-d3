@@ -2,7 +2,7 @@
 <html lang="pt-br">
   <head>
     <meta charset="utf-8">
-    <title>Interação 1</title>
+    <title>Barras simples</title>
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://d3js.org/colorbrewer.v1.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
@@ -111,12 +111,17 @@
           function mouseNoCirculo(d){
             d3.selectAll("text")
               .style("font-weight", p => p.UORG_LOTACAO === d.UORG_LOTACAO ? "bold" : "normal");
+            d3.selectAll("circle")
+              .style("fill", p => p.UORG_LOTACAO === d.UORG_LOTACAO ? "#b446ad" : "steelblue");
+
           }
 
           deptos.on("mouseout", mouseSaiuCirculo);
           function mouseSaiuCirculo(d){
             d3.selectAll("text")
               .style("font-weight", "normal");
+            d3.selectAll("circle")
+              .style("fill", "steelblue");
           }
 
 
@@ -125,6 +130,7 @@
            */
           const dataKeys = Object.keys(dadosLidos[0])
             .filter(d => d !== "UORG_LOTACAO" && d !== "Outro" && d !== "COD_SETOR" && d !== "CAMPUS")
+            console.log(dataKeys);
 
           d3.select("#controls").selectAll("button.teams")
             .data(dataKeys)
@@ -141,7 +147,7 @@
                             .range([ 2, 25 ])
             d3.selectAll("g.depto")
               .select("circle")
-              //.transition().duration(700) // descomente aqui para testar
+              .transition().duration(700) // descomente aqui para testar
               .attr("r", d => radiusScale(d[dimensao]))
           }
         }

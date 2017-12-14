@@ -130,6 +130,7 @@
               .attr("height", y.bandwidth())
               .attr("class", "depto")
 
+
           grafico.selectAll("text")
             .data(dados)
             .enter()
@@ -179,11 +180,19 @@
               .on("click", mudaDimensaoEReordena)
               .html(d => d);
 
+
+
           function mudaDimensaoEReordena(dimensao) {
             dimensaoSelecionada = dimensao
             // necessario para reordenar as barras/nomes
             // var nomesOrdenados = dados.sort((a, b) => d3.ascending(a[dimensao], b[dimensao]))
             //                           .map(d => d.nome_curto)
+            function pickColor(dimensao){
+              console.log(colorbrewer.YlGnBu[9])
+
+              console.log(colorbrewer.YlGnBu[9][dataKeys.indexOf(dimensao)]);
+              return colorbrewer.YlGnBu[9][dataKeys.indexOf(dimensao)]
+            }
 
             var maxValue = d3.max(dados, d => parseFloat(d[dimensao]))
 
@@ -193,6 +202,7 @@
               //.sort((a, b) => b[dimensao] - a[dimensao]) // necessario na hora de reordenar os retângulos
               .transition().duration(300).delay((d,i) => i * 20)
               .attr("width", d => escalaLargura(d[dimensao]))
+              .attr("fill", pickColor(dimensaoSelecionada));
 
           }
         }
